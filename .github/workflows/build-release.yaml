@@ -1,0 +1,48 @@
+name: Build and Publish Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build-and-publish:
+    name: Build and Publish Binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.8'
+
+      - name: Build Windows x86 binary
+        run: |
+          GOOS=windows GOARCH=386 go build -o release/wpm-windows-x86.exe
+
+      - name: Build Linux x86 binary
+        run: |
+          GOOS=linux GOARCH=386 go build -o release/wpm-linux-x86
+
+      - name: Upload binaries to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the release ID from the GitHub API
+          RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.event.release.tag_name }}" | jq -r .id)
+
+          # Upload the Windows binary
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: application/octet-stream" \
+               --data-binary @release/wpm-windows-x86.exe \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-windows-x86.exe"
+
+          # Upload the Linux binary
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: application/octet-stream" \
+               --data-binary @release/wpm-linux-x86 \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-linux-x86"
