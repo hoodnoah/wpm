@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ type Command int
 const (
 	Begin = iota
 	Stop
+	Quit
 )
 
 // parses user command input into the given command enum member
@@ -42,6 +44,8 @@ func parseUserCommand(userInput string) (Command, error) {
 		return Begin, nil
 	case "s":
 		return Stop, nil
+	case "q":
+		return Quit, nil
 	default:
 		return 0, fmt.Errorf("unidentified command input: %s", trimmedInput)
 	}
@@ -56,6 +60,30 @@ func parseInt(wordcountString string) (int, error) {
 	}
 }
 
+// query the user for wordcount, parse into integer and store in provided struct
+func getWordCount(stats *WordStats) error {
+	var countString string
+	if stats.StartCount != 0 {
+		fmt.Print("ending wordcount: ")
+	} else {
+		fmt.Print("starting wordcount: ")
+	}
+
+	fmt.Scan(&countString)
+	intCount, err := parseInt(countString)
+	if err != nil {
+		return err
+	}
+
+	if stats.StartCount != 0 {
+		stats.EndCount = intCount
+	} else {
+		stats.StartCount = intCount
+	}
+
+	return nil
+}
+
 func loop() {
 
 }
@@ -63,16 +91,11 @@ func loop() {
 func main() {
 	var stats WordStats
 
-	var wordCountString string
 	var commandString string
 
-	fmt.Print("beginning wordcount: ")
-	fmt.Scan(&wordCountString)
-	wordCount, err := parseInt(wordCountString)
-	if err != nil {
-		fmt.Printf("%s", err)
+	if err := getWordCount(&stats); err != nil {
+		fmt.Printf("%v", err)
 	}
-	stats.StartCount = wordCount
 
 	fmt.Print("[b]egin ")
 	fmt.Scan(&commandString)
@@ -97,17 +120,22 @@ func main() {
 	stats.EndTime = time.Now()
 	fmt.Println("Ended at ", stats.EndTime.Format(time.Kitchen))
 
-	fmt.Print("ending wordcount: ")
-	fmt.Scan(&wordCountString)
-	wordCount, err = parseInt(wordCountString)
-	if err != nil {
-		fmt.Printf("%s", err)
+	if err := getWordCount(&stats); err != nil {
+		fmt.Printf("%v", err)
 	}
-	stats.EndCount = wordCount
 
 	duration := stats.EndTime.Sub(stats.StartTime)
 	durationMinutes := duration.Minutes()
 	wpm := float64(stats.EndCount-stats.StartCount) / durationMinutes
 	fmt.Printf("%.0f wpm\n", wpm)
+
+	fmt.Printf("[q]uit ")
+	fmt.Scan(&commandString)
+	cmd, err = parseUserCommand(commandString)
+	if cmd == Quit {
+		os.Exit(0)
+	} else {
+		fmt.Printf("expected q to quit, received %s", commandString)
+	}
 
 }
