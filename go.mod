@@ -1,4 +1,4 @@
-module github.com/hooadnoah/wpm/m/v2
+module github.com/hoodnoah/wpm/m/v2
 
 go 1.22.8
 
