@@ -6,6 +6,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // input beginning word count
@@ -13,6 +16,93 @@ import (
 // [s] stop
 // input end word count
 // display rounded wpm
+
+type State int
+
+const (
+	Startup State = iota
+	Ready
+	Writing
+	Stopped
+)
+
+type model struct {
+	state      State
+	textInput  textinput.Model
+	message    string
+	startCount uint
+	endCount   uint
+	startTime  time.Time
+	endTime    time.Time
+}
+
+// initializes the model to its beginning state
+func initialModel() model {
+	ti := textinput.New()
+	ti.Placeholder = "enter wordcount"
+	ti.Focus()
+	ti.CharLimit = 7
+	ti.Width = 20
+
+	return model{
+		state:     Startup,
+		textInput: ti,
+		message:   "enter beginning wordcount",
+	}
+}
+
+// init returns a command used for initial I/O.
+// I have none, so we can return nil.
+func (m model) Init() tea.Cmd {
+	// return nil, meaning "no I/O atm"
+	return nil
+}
+
+// updates the underlying model based on action
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	// is it a keypress?
+	case tea.KeyMsg:
+		switch m.state {
+		case Startup:
+			// handle key events for text input
+			if msg.String() == "enter" {
+				if count, err := strconv.Atoi(m.textInput.Value()); err == nil {
+					m.StartCount = count
+					m.State = Ready
+					m.message = "[b]egin"
+					m.textInput.Reset()
+				} else {
+					m.message = "invalid input. please enter a numerical wordcount."
+				}
+			} else {
+				// pass other keys to the text input
+				m.textInput, cmd = m.textInput.Update(msg)
+			}
+		}
+	case tea.WindowSizeMsg:
+		m.textInput.Width = msg.Width / 3
+	}
+
+	return m, cmd
+}
+
+// renders the model
+func (m model) View() string {
+	var inputView string
+	if m.state == Startup || m.state == Stopped {
+		inputView = m.textInput.View()
+	}
+
+	return fmt.Sprintf(
+		"WPM\n\n%s\n\n%s\n\n%s\n",
+		m.message,
+		inputView,
+		"[q]uit",
+	)
+}
 
 type WordStats struct {
 	StartCount int
