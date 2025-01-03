@@ -1,13 +1,18 @@
 package main
 
 import (
+	// stdlib
 	"fmt"
 	"os"
 	"strconv"
 	"time"
 
+	// external
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+
+	// internal
+	"github.com/hoodnoah/wpm/m/v2/constants"
 )
 
 type State int
@@ -125,27 +130,31 @@ func (m model) View() string {
 	switch m.state {
 	case Startup:
 		return fmt.Sprintf(
-			"WPM\n\n%s\n\n%s\n\n%s",
+			"%s\n\n%s\n\n%s\n\n%s",
+			constants.Header,
 			m.message,
 			m.textInput.View(),
 			"[q]uit",
 		)
 	case Ready:
 		return fmt.Sprintf(
-			"WPM\n\nbeginning wordcount: %d\n\n%s",
+			"%s\n\nbeginning wordcount: %d\n\n%s",
+			constants.Header,
 			m.startCount,
 			"[q]uit | [b]egin",
 		)
 	case Writing:
 		return fmt.Sprintf(
-			"WPM\n\nbeginning wordcount: %d at %s\n\n%s",
+			"%s\n\nbeginning wordcount: %d at %s\n\n%s",
+			constants.Header,
 			m.startCount,
 			m.startTime.Format(time.Kitchen),
 			"[q]uit | [s]top",
 		)
 	case Stopped:
 		return fmt.Sprintf(
-			"WPM\n\nbeginning wordcount: %d at %s\n\n%s\n\n%s\n\n%s",
+			"%s\n\nbeginning wordcount: %d at %s\n\n%s\n\n%s\n\n%s",
+			constants.Header,
 			m.startCount,
 			m.startTime.Format(time.Kitchen),
 			m.message,
@@ -156,7 +165,8 @@ func (m model) View() string {
 		durationMinutes := max(m.endTime.Sub(m.startTime).Minutes(), 1)
 
 		return fmt.Sprintf(
-			"WPM\n\nbeginning wordcount: %d at %s\n\nending wordcount: %d at %s\n\nwords per minute: %d\n\n%s",
+			"%s\n\nbeginning wordcount: %d at %s\n\nending wordcount: %d at %s\n\nwords per minute: %d\n\n%s",
+			constants.Header,
 			m.startCount,
 			m.startTime.Format(time.Kitchen),
 			m.endCount,
