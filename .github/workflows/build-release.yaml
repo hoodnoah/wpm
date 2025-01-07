@@ -30,7 +30,7 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o release/wpm-linux-x86
 
-      - name: Build Mac arm binary
+      - name: Build Mac ARM binary
         run: |
           GOOS=darwin GOARCH=arm64 go build -o release/wpm-mac-arm
 
