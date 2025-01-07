@@ -34,7 +34,7 @@ jobs:
         run: |
           GOOS=darwin GOARCH=arm64 go build -o release/wpm-mac-arm
 
-      - name: Build Mac x86 binary
+      - name: Build Mac Intel binary
         run: |
           GOOS=darwin GOARCH=amd64 go build -o release/wpm-mac-intel
 
@@ -55,3 +55,15 @@ jobs:
                -H "Content-Type: application/octet-stream" \
                --data-binary @release/wpm-linux-x86 \
                "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-linux-x86"
+
+          # Upload the Mac ARM binary
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: application/octet-stream" \
+               --data-binary @release/wpm-mac-arm \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-mac-arm"
+
+          # Upload the Mac Intel binary
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: application/octet-stream" \
+               --data-binary @release/wpm-mac-intel \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-mac-intel"
