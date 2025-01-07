@@ -6,7 +6,7 @@ on:
       - created
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   build-and-publish:
@@ -20,15 +20,23 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.8'
+          go-version: "1.22.8"
 
       - name: Build Windows x86 binary
         run: |
-          GOOS=windows GOARCH=386 go build -o release/wpm-windows-x86.exe
+          GOOS=windows GOARCH=amd64 go build -o release/wpm-windows-x86.exe
 
       - name: Build Linux x86 binary
         run: |
-          GOOS=linux GOARCH=386 go build -o release/wpm-linux-x86
+          GOOS=linux GOARCH=amd64 go build -o release/wpm-linux-x86
+
+      - name: Build Mac arm binary
+        run: |
+          GOOS=darwin GOARCH=arm64 build -o release/wpm-mac-arm
+
+      - name: Build Mac x86 binary
+        run: |
+          GOOS=darwin GOARCH=amd64 build -o release/wpm-mac-intel
 
       - name: Upload binaries to release
         env:
