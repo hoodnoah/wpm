@@ -32,11 +32,11 @@ jobs:
 
       - name: Build Mac arm binary
         run: |
-          GOOS=darwin GOARCH=arm64 build -o release/wpm-mac-arm
+          GOOS=darwin GOARCH=arm64 go build -o release/wpm-mac-arm
 
       - name: Build Mac x86 binary
         run: |
-          GOOS=darwin GOARCH=amd64 build -o release/wpm-mac-intel
+          GOOS=darwin GOARCH=amd64 go build -o release/wpm-mac-intel
 
       - name: Upload binaries to release
         env:
