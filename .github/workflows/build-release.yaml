@@ -40,7 +40,7 @@ jobs:
 
       # Upload build artifacts for other jobs to access
       - name: Upload *Unsigned* Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unsigned-binaries
           path: release/
@@ -60,7 +60,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Download macOS Binaries from artifact storage
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: unsigned-binaries
           path: unsigned
@@ -81,12 +81,14 @@ jobs:
         run: |
           codesign --force --deep --options runtime \
           --sign "$MACOS_CERTIFICATE_NAME" \
+          --verbose=4
           unsigned/wpm-mac-intel
 
       - name: Codesign the ARM executable
         run: |
           codesign --force --deep --options runtime \
           --sign "$MACOS_CERTIFICATE_NAME" \
+          --verbose=4
           unsigned/wpm-mac-arm
 
       - name: Setup keychain for notarization
@@ -97,9 +99,7 @@ jobs:
       - name: Notarize the Intel executable
         run: |
           xcrun notarytool submit unsigned/wpm-mac-intel \
-            --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
-            --team-id "$MACOS_NOTARIZATION_TEAM_ID" \
-            --password "$MACOS_NOTARIZATION_PWD" \
+            --keychain-profile "notarytool-profile" \
             --wait
 
           xcrun stapler staple unsigned/wpm-mac-intel
@@ -107,15 +107,13 @@ jobs:
       - name: Notarize the ARM executable
         run: |
           xcrun notarytool submit unsigned/wpm-mac-arm \
-            --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
-            --team-id "$MACOS_NOTARIZATION_TEAM_ID" \
-            --password "$MACOS_NOTARIZATION_PWD" \
+            --keychain-profile "notarytool-profile" \
             --wait
 
           xcrun stapler staple unsigned/wpm-mac-arm
 
       - name: Upload signed macOS files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: signed-mac
           path: unsigned/wpm-mac-*
@@ -127,13 +125,13 @@ jobs:
     needs: [build-binaries, sign-mac]
     steps:
       - name: Download signed Mac
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: signed-mac
           path: release/signed
 
       - name: Download unsigned binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: unsigned-binaries
           path: release/unsigned
