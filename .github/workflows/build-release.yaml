@@ -67,26 +67,26 @@ jobs:
 
       - name: Decode base64 cert back to .p12
         run: |
-          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
 
       - name: Create keychain for headless environment
         run: |
           security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
           security default-keychain -s build.keychain
-          security unlock keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
           security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:.apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" build.keychain
 
       - name: Codesign the Intel executable
         run: |
           codesign --force --deep --options runtime \
-          -- sign "$MACOS_CERTIFICATE_NAME" \
+          --sign "$MACOS_CERTIFICATE_NAME" \
           unsigned/wpm-mac-intel
 
       - name: Codesign the ARM executable
         run: |
           codesign --force --deep --options runtime \
-          -- sign "$MACOS_CERTIFICATE_NAME" \
+          --sign "$MACOS_CERTIFICATE_NAME" \
           unsigned/wpm-mac-arm
 
       - name: Setup keychain for notarization
@@ -96,7 +96,7 @@ jobs:
 
       - name: Notarize the Intel executable
         run: |
-          xcrun notarytool submit unsigned/wpm-mac-intel \ 
+          xcrun notarytool submit unsigned/wpm-mac-intel \
             --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
             --team-id "$MACOS_NOTARIZATION_TEAM_ID" \
             --password "$MACOS_NOTARIZATION_PWD" \
@@ -106,7 +106,7 @@ jobs:
 
       - name: Notarize the ARM executable
         run: |
-          xcrun notarytool submit unsigned/wpm-mac-arm \ 
+          xcrun notarytool submit unsigned/wpm-mac-arm \
             --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
             --team-id "$MACOS_NOTARIZATION_TEAM_ID" \
             --password "$MACOS_NOTARIZATION_PWD" \
@@ -122,7 +122,7 @@ jobs:
 
   publish:
     name: Publish Binaries (only on a real release)
-    if: ${{ github.event_name == 'release '}}
+    if: ${{ github.event_name == 'release'}}
     runs-on: ubuntu-latest
     needs: [build-binaries, sign-mac]
     steps:
