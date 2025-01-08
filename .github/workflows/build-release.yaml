@@ -79,15 +79,13 @@ jobs:
 
       - name: Codesign the Intel executable
         run: |
-          codesign --force --deep --options runtime \
-          --verbose 4 \
+          codesign --force --deep --verbose=4 --options runtime \
           --sign "$MACOS_CERTIFICATE_NAME" \
           unsigned/wpm-mac-intel
 
       - name: Codesign the ARM executable
         run: |
-          codesign --force --deep --options runtime \
-          --verbose 4 \
+          codesign --force --deep --verbose=4 --options runtime \
           --sign "$MACOS_CERTIFICATE_NAME" \
           unsigned/wpm-mac-arm
 
