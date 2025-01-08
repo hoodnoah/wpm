@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unsigned-binaries
-          path: unsigned/
+          path: release/
 
   sign-mac:
     name: Sign Mac Binaries
@@ -63,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: unsigned-binaries
-          path: unsigned
+          path: unsigned/
 
       - name: Decode base64 cert back to .p12
         run: |
