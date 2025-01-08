@@ -147,14 +147,14 @@ jobs:
           # Upload the unsigned Windows binary
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
                -H "Content-Type: application/octet-stream" \
-               --data-binary @release/unsigned/wpm-windows-x86.exe \
-               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-windows-x86.exe"
+               --data-binary @release/unsigned/wpm-windows-amd64.exe \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-windows-amd64.exe"
 
           # Upload the unsigned Linux binary
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
                -H "Content-Type: application/octet-stream" \
-               --data-binary @release/unsigned/wpm-linux-x86 \
-               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-linux-x86"
+               --data-binary @release/unsigned/wpm-linux-amd64 \
+               "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=wpm-linux-amd64"
 
           # Upload the signed, notarized Mac ARM binary
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
