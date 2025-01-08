@@ -80,15 +80,15 @@ jobs:
       - name: Codesign the Intel executable
         run: |
           codesign --force --deep --options runtime \
+          --verbose 4 \
           --sign "$MACOS_CERTIFICATE_NAME" \
-          --verbose=4
           unsigned/wpm-mac-intel
 
       - name: Codesign the ARM executable
         run: |
           codesign --force --deep --options runtime \
+          --verbose 4 \
           --sign "$MACOS_CERTIFICATE_NAME" \
-          --verbose=4
           unsigned/wpm-mac-arm
 
       - name: Setup keychain for notarization
