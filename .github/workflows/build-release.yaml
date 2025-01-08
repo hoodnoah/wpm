@@ -47,6 +47,7 @@ jobs:
 
   sign-mac:
     name: Sign Mac Binaries
+    needs: build-binaries
     env:
       MACOS_CERTIFICATE: ${{ secrets.PROD_MACOS_CERTIFICATE }}
       MACOS_CERTIFICATE_PWD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
@@ -123,7 +124,7 @@ jobs:
     name: Publish Binaries (only on a real release)
     if: ${{ github.event_name == 'release '}}
     runs-on: ubuntu-latest
-    needs: [sign-mac]
+    needs: [build-binaries, sign-mac]
     steps:
       - name: Download signed Mac
         uses: actions/download-artifact@v3
