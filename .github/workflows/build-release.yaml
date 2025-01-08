@@ -96,7 +96,10 @@ jobs:
 
       - name: Notarize the Intel executable
         run: |
-          xcrun notarytool submit unsigned/wpm-mac-intel \
+          echo "Create temporary notarization archive"
+          ditto -c -k --keepParent "unsigned/wpm-mac-intel" "notarization-intel.zip"
+
+          xcrun notarytool submit notarization-intel.zip \
             --keychain-profile "notarytool-profile" \
             --wait
 
@@ -104,6 +107,9 @@ jobs:
 
       - name: Notarize the ARM executable
         run: |
+          echo "Create temporary notarization archive"
+          ditto -c -k --keepParent "unsigned/wpm-mac-arm" "notarization-arm.zip"
+
           xcrun notarytool submit unsigned/wpm-mac-arm \
             --keychain-profile "notarytool-profile" \
             --wait
