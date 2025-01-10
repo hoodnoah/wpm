@@ -110,7 +110,7 @@ jobs:
           echo "Create temporary notarization archive"
           ditto -c -k --keepParent "unsigned/wpm-mac-arm" "notarization-arm.zip"
 
-          xcrun notarytool submit unsigned/wpm-mac-arm \
+          xcrun notarytool submit notarization-arm.zip \
             --keychain-profile "notarytool-profile" \
             --wait
 
