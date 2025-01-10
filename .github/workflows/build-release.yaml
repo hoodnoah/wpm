@@ -103,7 +103,7 @@ jobs:
             --keychain-profile "notarytool-profile" \
             --wait
 
-          xcrun stapler staple unsigned/wpm-mac-intel
+        # xcrun stapler staple unsigned/wpm-mac-intel
 
       - name: Notarize the ARM executable
         run: |
@@ -114,7 +114,7 @@ jobs:
             --keychain-profile "notarytool-profile" \
             --wait
 
-          xcrun stapler staple unsigned/wpm-mac-arm
+        # xcrun stapler staple unsigned/wpm-mac-arm
 
       - name: Upload signed macOS files
         uses: actions/upload-artifact@v4
